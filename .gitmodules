@@ -10,6 +10,9 @@
 [submodule "config-repository"]
 	path = config-repository
 	url = https://github.com/david-eve-za/config-repository.git
-[submodule "accounts-service"]
-	path = accounts-service
-	url = https://github.com/david-eve-za/accounts-service.git
+[submodule "frontend-service"]
+	path = frontend-service
+	url = https://github.com/david-eve-za/frontend-service.git
+[submodule "auth-server"]
+	path = auth-server
+	url = https://github.com/david-eve-za/auth-server.git
