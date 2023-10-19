@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.1.4</version>
+        <version>3.2.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -19,8 +19,17 @@
         <maven.compiler.target>17</maven.compiler.target>
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring-cloud.version>2022.0.4</spring-cloud.version>
+        <spring-cloud.version>2023.0.0</spring-cloud.version>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
 
     <dependencyManagement>
         <dependencies>
@@ -37,29 +46,8 @@
     <modules>
         <module>eureka-server</module>
         <module>api-gateway</module>
-        <module>Common</module>
-        <module>products-service</module>
-        <module>order-service</module>
-        <module>inventory-service</module>
-        <module>notification-service</module>
-        <module>mng-service</module>
-        <module>tmo-service</module>
-        <module>money-manager-service</module>
-        <module>accounts-service</module>
-        <module>authorization-service</module>
         <module>config-server</module>
     </modules>
-
-
-
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <scope>runtime</scope>
-            <optional>true</optional>
-        </dependency>
-    </dependencies>
 
     <build>
         <plugins>
