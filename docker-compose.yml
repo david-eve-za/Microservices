@@ -1,0 +1,97 @@
+version: '3.8'
+services:
+  mysql-db:
+    image: mysql:latest
+    container_name: db-full-application
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - 3306:3306
+      - 33060:33060
+    expose:
+      - 3306
+      - 33060
+    volumes:
+      - ./misc-files/init/init.sql:/docker-entrypoint-initdb.d/init.sql
+    #      - ./misc-files/db-full-application:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+  keycloak:
+    container_name: keycloak
+    image: quay.io/keycloak/keycloak:latest
+    ports:
+      - 8181:8080
+    expose:
+      - 8181
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: mysql
+      KC_DB_VENDOR: mysql
+      KC_DB_URL_HOST: mysql-db
+      KC_DB_DATABASE: keycloak
+      KC_DB_USERNAME: keycloaker
+      KC_DB_PASSWORD: keycloaked
+      KC_HTTP_ENABLED: "false"
+      KC_HTTPS_ENABLED: "false"
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_PORT: 8181
+      KC_HOSTNAME_STRICT: "false"
+      KC_HOSTNAME_STRICT_HTTPS: "false"
+      KC_LOG_LEVEL: DEBUG
+      KC_HEALTH_ENABLED: true
+      KC_METRICS_ENABLED: true
+      KC_PROXY: edge
+      KC_TRANSACTION_XA_ENABLED: false
+      KC_DB_URL_PROPERTIES: ?allowPublicKeyRetrieval=true
+    command: -v start-dev --import-realm
+    volumes:
+      - ./misc-files/keycloak:/opt/keycloak/data/import
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+  ### Zookeeper
+  zookeeper:
+    container_name: zookeeper
+    image: confluentinc/cp-zookeeper:7.4.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    healthcheck:
+      test: [ "CMD", "zookeeper-shell", "localhost:2181", "ls", "/" ]
+    ports:
+      - "2181:2181"
+  ### Kafka
+  kafka:
+    container_name: kafka
+    image: confluentinc/cp-kafka:7.4.0
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_ADVERTISED_HOST_NAME: localhost
+  ### Kafka UI
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "8090:8080"
+    depends_on:
+      - kafka
+      - zookeeper
+    environment:
+#      DYNAMIC_CONFIG_ENABLED: true
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
