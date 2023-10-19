@@ -1,15 +1,16 @@
 [submodule "eureka-server"]
 	path = eureka-server
 	url = https://github.com/david-eve-za/eureka-server.git
+	ignore = dirty
 [submodule "api-gateway"]
 	path = api-gateway
 	url = https://github.com/david-eve-za/api-gateway.git
+	ignore = dirty
 [submodule "config-server"]
 	path = config-server
 	url = https://github.com/david-eve-za/config-server.git
+	ignore = dirty
 [submodule "config-repository"]
 	path = config-repository
 	url = https://github.com/david-eve-za/config-repository.git
-[submodule "accounts-service"]
-	path = accounts-service
-	url = https://github.com/david-eve-za/accounts-service.git
+	ignore = dirty
